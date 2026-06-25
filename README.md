@@ -1,4 +1,4 @@
-# 🤖 Amazon Warehouse Robot Simulation
+🤖 Amazon Warehouse Robot Simulation
 > Autonomous warehouse robot simulation using ROS 2, Gazebo, SLAM Toolbox, and a LiDAR camera for intelligent package sorting.
 ---
 Table of Contents
@@ -33,17 +33,17 @@ System Architecture
 │  └──────────────┘    └──────────────┘    └──────────────┘  │
 │         │                                        │          │
 │         ▼                                        ▼          │
-│  ┌──────────────┐                      ┌──────────────┐    │
-│  │  Package     │                      │  Robot       │    │
-│  │  Classifier  │──────────────────────│  Controller  │    │
-│  └──────────────┘                      └──────────────┘    │
+│  ┌──────────────┐                        ┌──────────────┐  │
+│  │  Package     │                        │  Robot       │  │
+│  │  Classifier  │───────────────────────▶│  Controller  │  │
+│  └──────────────┘                        └──────────────┘  │
 │                                                             │
 └───────────────────────────┬─────────────────────────────────┘
                             │
-                    ┌───────▼───────┐
-                    │    Gazebo     │
-                    │  Simulation   │
-                    └───────────────┘
+                  ┌─────────▼─────────┐
+                  │      Gazebo       │
+                  │    Simulation     │
+                  └───────────────────┘
 ```
 ---
 Features
@@ -222,27 +222,27 @@ python3 scripts/spawn_packages.py --count 20 --random-seed 42
 ---
 Package Sorting Pipeline
 The sorting pipeline runs in three stages:
-1. Detection — The LiDAR camera continuously publishes a `PointCloud2` stream. The `lidar_processor` node applies ground removal, voxel downsampling, and Euclidean cluster extraction to isolate individual package candidates.
-2. Classification — Each cluster's bounding box is computed. The `package_classifier` node bins packages into `small`, `medium`, `large`, or `unknown` categories based on configured dimension thresholds.
-3. Routing — The `drop_zone_router` node generates a Nav2 goal for the appropriate drop zone and dispatches the robot. The robot confirms delivery by re-scanning the drop area for the package's point cloud signature.
+Detection — The LiDAR camera continuously publishes a `PointCloud2` stream. The `lidar_processor` node applies ground removal, voxel downsampling, and Euclidean cluster extraction to isolate individual package candidates.
+Classification — Each cluster's bounding box is computed. The `package_classifier` node bins packages into `small`, `medium`, `large`, or `unknown` categories based on configured dimension thresholds.
+Routing — The `drop_zone_router` node generates a Nav2 goal for the appropriate drop zone and dispatches the robot. The robot confirms delivery by re-scanning the drop area for the package's point cloud signature.
 ```
 PointCloud2 ──▶ Ground Removal ──▶ Clustering ──▶ BBox Estimation
                                                          │
-                                               ┌─────────▼──────────┐
-                                               │  Package Classifier │
-                                               └─────────┬──────────┘
+                                                ┌────────┴──────────┐
+                                                │ Package Classifier │
+                                                └────────┬──────────┘
                                                          │
-                                              small / medium / large
+                                               small / medium / large
                                                          │
-                                               ┌─────────▼──────────┐
-                                               │  Drop Zone Router   │
-                                               └─────────┬──────────┘
+                                                ┌────────▼──────────┐
+                                                │  Drop Zone Router  │
+                                                └────────┬──────────┘
                                                          │
-                                                  Nav2 Goal Pose
+                                                   Nav2 Goal Pose
 ```
 ---
 SLAM & Navigation
-The robot builds a 2D occupancy grid map using SLAM Toolbox while simultaneously localizing itself within it. The LiDAR scan data is fused with odometry to produce a consistent global map.
+The robot builds a 2D occupancy grid map using SLAM Toolbox while simultaneously localizing itself within it. LiDAR scan data is fused with odometry to produce a consistent global map.
 Once mapping is complete, save the map with:
 ```bash
 ros2 run nav2_map_server map_saver_cli -f maps/warehouse_map
@@ -289,7 +289,7 @@ Make sure `GAZEBO_MODEL_PATH` includes the project models directory:
 export GAZEBO_MODEL_PATH=$GAZEBO_MODEL_PATH:$(pwd)/src/warehouse_gazebo/models
 ```
 SLAM map is drifting
-Reduce the robot's maximum speed in `nav2_params.yaml` and ensure the LiDAR scan topic matches the `slam_toolbox` configuration (`scan_topic` parameter).
+Reduce the robot's maximum speed in `nav2_params.yaml` and ensure the LiDAR scan topic matches the SLAM Toolbox configuration (`scan_topic` parameter).
 No point cloud published
 Verify the LiDAR plugin is loaded in Gazebo by checking:
 ```bash
