@@ -1,4 +1,4 @@
-🤖 Amazon Warehouse Robot Simulation
+# 🤖 Amazon Warehouse Robot Simulation
 > Autonomous warehouse robot simulation using ROS 2, Gazebo, SLAM Toolbox, and a LiDAR camera for intelligent package sorting.
 ---
 Table of Contents
