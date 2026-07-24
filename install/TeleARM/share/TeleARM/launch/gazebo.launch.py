@@ -66,20 +66,22 @@ def launch_setup(context, *args, **kwargs):
         output='screen',
     )
 
+    # IMPORTANT: use -s (sim time) — Gazebo/controller_manager run on /clock.
+    # Without -s, load_controller often fails immediately and the car never moves.
     load_joint_state_broadcaster = ExecuteProcess(
         cmd=[
-            'ros2', 'control', 'load_controller',
-            '--set-state', 'active',
-            'joint_state_broadcaster',
+            'bash', '-c',
+            'sleep 3 && ros2 control load_controller -s --spin-time 30 '
+            '--set-state active joint_state_broadcaster',
         ],
         output='screen',
     )
 
     load_diff_drive_base_controller = ExecuteProcess(
         cmd=[
-            'ros2', 'control', 'load_controller',
-            '--set-state', 'active',
-            'diff_drive_base_controller',
+            'bash', '-c',
+            'sleep 1 && ros2 control load_controller -s --spin-time 30 '
+            '--set-state active diff_drive_base_controller',
         ],
         output='screen',
     )
